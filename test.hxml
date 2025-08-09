@@ -1,0 +1,11 @@
+-x TestMain
+-cp src
+-cp test
+
+-lib thx.core
+-lib buddy
+
+-dce full
+--debug
+-D buddy-colors
+-D no-deprecation-warnings
