@@ -1,11 +1,7 @@
--x Main
+--main Main
 -cp src
--cp test
 
--lib thx.core
--lib buddy
-
--dce full
+--js bin/main.js
+# -dce full
+-dce std
 --debug
--D buddy-colors
--D no-deprecation-warnings

@@ -1,14 +1,14 @@
 package engine;
 
 class Engine {
-    public var test:Int;
+    public static var should_stop(default, null):Bool = true;
 
-    public function new() {
-        test = 42;
-    }
-}
-
-// top-level function, procedural style
-function start(engine:Engine) {
-    trace("Engine test value: " + engine.test);
+	public static function start() {
+		should_stop = false;
+		trace("Starting engine");
+	}
+	public static function stop() {
+		should_stop = true;
+		trace("Stopping engine");
+	}
 }
