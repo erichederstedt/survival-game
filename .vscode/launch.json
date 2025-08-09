@@ -9,8 +9,6 @@
       "request": "launch",
       "name": "start-debug",
       "url": "http://localhost:8000/index.html",
-      "preLaunchTask": "start-server",
-      "postDebugTask": "stop-server",
       "runtimeArgs": [
         "--disable-search-engine-choice-screen",
         "--auto-open-devtools-for-tabs"
