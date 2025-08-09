@@ -10,51 +10,6 @@
         "isDefault": true
       },
       "label": "hxml: build.hxml"
-    },
-    {
-      "label": "start-server",
-      "type": "shell",
-      "command": "python",
-      "args": ["-m", "http.server", "8000"],
-      "isBackground": true,
-      "options": {
-        "cwd": "${workspaceFolder}/bin"
-      },
-      "problemMatcher": {
-        "pattern": [
-          {
-            "regexp": ".",
-            "file": 1,
-            "location": 2,
-            "message": 3
-          }
-        ],
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": ".",
-          "endsPattern": "."
-        }
-      }
-    },
-    {
-      "label": "stop-server",
-      "type": "shell",
-      "command": "taskkill /F /IM python.exe",
-      "problemMatcher": {
-        "pattern": [
-          {
-            "regexp": ".",
-            "file": 1,
-            "location": 2,
-            "message": 3
-          }
-        ],
-        "background": {
-          "activeOnStart": true,
-          "beginsPattern": ".",
-          "endsPattern": "."
-        }
-      }
     }
   ]
 }
