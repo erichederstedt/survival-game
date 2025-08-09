@@ -3,12 +3,6 @@ package engine;
 import js.html.KeyboardEvent;
 import js.Browser;
 
-enum KeyState {
-	Pressed;
-	Held;
-	Released;
-}
-
 enum KeyEventType {
 	Pressed;
 	Released;
@@ -20,7 +14,8 @@ typedef KeyEvent = {
 }
 
 class Input {
-	private static var _keyState:Map<Key, KeyState> = new Map();
+	private static var _keyState:Map<Key, KeyEventType> = new Map();
+	private static var _keyStatePrev:Map<Key, KeyEventType> = new Map();
 
 	private static var _eventQueue:Array<KeyEvent> = [];
 
@@ -30,32 +25,30 @@ class Input {
 	}
 
 	public static function update():Void {
-		for (key => state in _keyState) {
-			if (state == Pressed)
-				_keyState.set(key, KeyState.Held);
-		}
+		_keyStatePrev = _keyState.copy();
 
 		for (event in _eventQueue) {
 			switch (event.type) {
 				case KeyEventType.Pressed:
-					_keyState.set(event.key, KeyState.Pressed);
+					_keyState.set(event.key, KeyEventType.Pressed);
 				case KeyEventType.Released:
-					_keyState.set(event.key, KeyState.Released);
+					_keyState.set(event.key, KeyEventType.Released);
 			}
 		}
 		_eventQueue = [];
 	}
 
 	public static function key_held(key:Key):Bool {
-		return _keyState.get(key) == KeyState.Held;
+		// NOTE(Eric): should probably be == instead of || but that adds 1 frame delay.
+		return _keyState.get(key) == KeyEventType.Pressed || _keyStatePrev.get(key) == KeyEventType.Pressed;
 	}
 
 	public static function key_pressed(key:Key):Bool {
-		return _keyState.get(key) == KeyState.Pressed;
+		return _keyState.get(key) == KeyEventType.Pressed;
 	}
 
 	public static function key_released(key:Key):Bool {
-		return _keyState.get(key) == KeyState.Released;
+		return _keyState.get(key) == KeyEventType.Released;
 	}
 
 	private static function _onKeyDown(event:KeyboardEvent):Void {
