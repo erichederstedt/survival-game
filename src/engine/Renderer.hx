@@ -40,13 +40,15 @@ class Renderer {
 		quad.size = size;
 	}
 
-	public static function render() {
-		// trace("draw width:" + gl.drawingBufferWidth + ", " + "draw height:" + gl.drawingBufferHeight);
-		// trace("canvas width:" + canvas.width + ", " + "canvas height:" + canvas.height);
+	public static function resize() {
 		if (canvas.width != canvas.clientWidth || canvas.height != canvas.clientHeight) {
 			canvas.width = canvas.clientWidth;
 			canvas.height = canvas.clientHeight;
 		}
+	}
+
+	public static function render() {
+		resize();
 
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(GL.COLOR_BUFFER_BIT);
