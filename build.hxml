@@ -1,7 +1,11 @@
 --main Main
 -cp src
 
+-lib thx.core
+-lib vector-math
+
 --js bin/main.js
 # -dce full
 -dce std
 --debug
+-D no-deprecation-warnings

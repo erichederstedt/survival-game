@@ -1,28 +1,27 @@
 package;
 
+import VectorMath;
 import engine.*;
 
 class Main {
 	public static function main() {
-		Engine.start();
-
-		#if js
-		var loop = null;
-		loop = (_) -> {
-			mainLoop();
-			if (!Engine.should_stop)
-				js.Browser.window.requestAnimationFrame(loop);
-		};
-		js.Browser.window.requestAnimationFrame(loop);
-		#else
-		while (!Engine.should_stop) {
-			mainLoop();
-			Sys.sleep(1 / 60);
-		}
-		#end
+		Engine.start(main_loop);
 	}
 
-	public static function mainLoop() {
-		trace("fuck");
+	public static var pos = vec2(0.0);
+
+	public static function main_loop() {
+		final speed:Float = 0.2;
+		if (Input.key_held(Key.W))
+			pos.y += speed * Engine.delta_time;
+		if (Input.key_held(Key.S))
+			pos.y -= speed * Engine.delta_time;
+		if (Input.key_held(Key.A))
+			pos.x -= speed * Engine.delta_time;
+		if (Input.key_held(Key.D))
+			pos.x += speed * Engine.delta_time;
+
+		Renderer.draw_quad(pos, vec2(50.0));
+		Renderer.render();
 	}
 }
