@@ -2,6 +2,7 @@ package;
 
 import VectorMath;
 import engine.*;
+import renderer.Renderer;
 
 class Main {
 	public static function main() {
