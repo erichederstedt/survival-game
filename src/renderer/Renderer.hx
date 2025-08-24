@@ -4,8 +4,6 @@ import VectorMath;
 import haxe.io.Float32Array;
 import js.Browser;
 import js.html.CanvasElement;
-import js.html.Image;
-import js.html.webgl.Texture;
 import js.lib.Uint8Array;
 import renderer.InputLayout;
 import renderer.Shader;
@@ -24,19 +22,54 @@ function quad():Quad {
 	};
 }
 
-@:structInit
 class Texture {
-	public var path:String;
-	public var image:Image;
-	public var gl_texture:js.html.webgl.Texture;
-}
+	final path:String;
+	final image:js.html.Image;
+	final texture:js.html.webgl.Texture;
 
-function texture():Texture {
-	return {
-		path: '',
-		image: new Image(),
-		gl_texture: Renderer.gl.createTexture()
-	};
+	public var status(default, null):Status;
+
+	public function new(path:String, generateMips:Bool = true) {
+		this.path = path;
+		this.image = new js.html.Image();
+		this.texture = Renderer.gl.createTexture();
+		this.status = Status.Loading;
+
+		Renderer.gl.bindTexture(GL.TEXTURE_2D, this.texture);
+		Renderer.gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, 1, 1, 0, GL.RGBA, GL.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
+
+		this.image.crossOrigin = "anonymous";
+		this.image.src = path;
+		this.image.addEventListener('load', () -> {
+			Renderer.gl.bindTexture(GL.TEXTURE_2D, this.texture);
+			Renderer.gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, this.image);
+
+			if (generateMips && isPowerOf2()) {
+				Renderer.gl.generateMipmap(GL.TEXTURE_2D);
+				Renderer.gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);
+			} else {
+				Renderer.gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+				Renderer.gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+				Renderer.gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
+			}
+
+			this.status = Status.Succesful;
+		});
+	}
+
+	public function isPowerOf2():Bool {
+		return (this.image.width & (this.image.width - 1)) == 0 && (this.image.height & (this.image.height - 1)) == 0;
+	}
+
+	public function bind(textureUnit:Int = 0) {
+		Renderer.gl.activeTexture(GL.TEXTURE0 + textureUnit);
+		Renderer.gl.bindTexture(GL.TEXTURE_2D, this.texture);
+	}
+
+	public function unbind(textureUnit:Int = 0) {
+		Renderer.gl.activeTexture(GL.TEXTURE0 + textureUnit);
+		Renderer.gl.bindTexture(GL.TEXTURE_2D, null);
+	}
 }
 
 class Renderer {
@@ -99,24 +132,6 @@ class Renderer {
 		var quad = quadsToDraw.alloc();
 		quad.pos = pos;
 		quad.size = size;
-	}
-
-	public static function loadTexture(path:String, generate_mip_maps:Bool = true):Texture {
-		final texture = texture();
-		texture.path = path;
-
-		gl.bindTexture(GL.TEXTURE_2D, texture.gl_texture);
-		gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, 1, 1, 0, GL.RGBA, GL.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
-
-		texture.image.src = path;
-		texture.image.addEventListener('load', () -> {
-			gl.bindTexture(GL.TEXTURE_2D, texture.gl_texture);
-			gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, texture.image);
-			if (generate_mip_maps)
-				gl.generateMipmap(GL.TEXTURE_2D);
-		});
-
-		return texture;
 	}
 
 	public static function resize() {
