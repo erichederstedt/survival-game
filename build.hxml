@@ -3,6 +3,7 @@
 
 -lib thx.core
 -lib vector-math
+-lib haxe.Signal
 
 --js bin/main.js
 # -dce full

@@ -21,7 +21,7 @@ class Main {
 		if (Input.key_held(Key.D))
 			pos.x += speed * Engine.delta_time;
 
-		Renderer.draw_quad(pos, vec2(50.0));
+		Renderer.drawQuad(pos, vec2(50.0));
 		Renderer.render();
 	}
 }

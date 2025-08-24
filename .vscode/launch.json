@@ -8,11 +8,13 @@
       "type": "chrome",
       "request": "launch",
       "name": "start-debug",
-      "url": "http://localhost:8000/index.html",
+      "url": "http://127.0.0.1:5500/index.html",
       "runtimeArgs": [
         "--disable-search-engine-choice-screen",
         "--auto-open-devtools-for-tabs"
-      ]
+      ],
+      "webRoot": "${workspaceFolder}/bin",
+      "preLaunchTask": "Start Five Server"
     }
   ]
 }

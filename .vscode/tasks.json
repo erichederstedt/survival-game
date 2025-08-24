@@ -10,6 +10,26 @@
         "isDefault": true
       },
       "label": "hxml: build.hxml"
+    },
+    {
+      "label": "Start Five Server",
+      "type": "shell",
+      "command": "five-server",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "five-server",
+        "pattern": {
+          "regexp": "^.*> Local:.*(http://.*)$",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Five Server running at:.*$",
+          "endsPattern": "^.*> Local:.*http.*$"
+        }
+      }
     }
   ]
 }
