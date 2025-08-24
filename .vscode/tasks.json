@@ -14,7 +14,7 @@
     {
       "label": "Start Five Server",
       "type": "shell",
-      "command": "five-server",
+      "command": "npx five-server",
       "isBackground": true,
       "problemMatcher": {
         "owner": "five-server",

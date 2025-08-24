@@ -1,2 +1,6 @@
 bin/main.js
 bin/main.js.map
+.haxelib
+node_modules
+package.json
+package-lock.json
