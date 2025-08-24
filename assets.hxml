@@ -1,0 +1,6 @@
+-x Main
+-cp assets
+
+-dce full
+--debug
+-D no-deprecation-warnings

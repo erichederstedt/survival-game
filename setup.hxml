@@ -1,4 +1,5 @@
 --cmd npm install five-server
+--cmd npm install gpu-tex-enc
 --cmd haxelib newrepo
 --cmd haxelib install thx.core
 --cmd haxelib install buddy
