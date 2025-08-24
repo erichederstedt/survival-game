@@ -23,8 +23,8 @@ class Shader {
 		this.type = type;
 		this.shader = Renderer.gl.createShader(type);
 		this.status = Status.Loading;
-		this.onError = new Signal<(shader:Shader, msg:String) -> Void>();
-		this.onSuccess = new Signal<(shader:Shader) -> Void>();
+		this.onError = new Signal();
+		this.onSuccess = new Signal();
 
 		if (onSuccess != null)
 			this.onSuccess += onSuccess;
