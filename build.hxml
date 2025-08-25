@@ -1,4 +1,4 @@
---main Main
+--main MainGame
 -cp src
 
 -lib thx.core

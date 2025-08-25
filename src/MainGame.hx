@@ -4,7 +4,7 @@ import VectorMath;
 import engine.*;
 import renderer.Renderer;
 
-class Main {
+class MainGame {
 	public static function main() {
 		Engine.start(main_loop);
 	}
