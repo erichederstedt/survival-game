@@ -1,0 +1,6 @@
+--cmd rm -rf .haxelib
+--cmd rm -rf node_modules
+--cmd rm -rf package.json
+--cmd rm -rf package-lock.json
+--cmd rm -rf bin/main.js
+--cmd rm -rf bin/main.js.map
