@@ -9,3 +9,4 @@ package-lock.json
 *.ktx2
 bin/assetList.json
 bin/assetsrc/
+dump

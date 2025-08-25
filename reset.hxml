@@ -4,3 +4,4 @@
 --cmd rm -rf package-lock.json
 --cmd rm -rf bin/main.js
 --cmd rm -rf bin/main.js.map
+--cmd rm -rf dump

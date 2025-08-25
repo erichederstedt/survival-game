@@ -6,6 +6,9 @@ import haxe.Json;
 import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
+#if !macro
+import assets.AssetSystem;
+#end
 
 class MainAssets {
 	public static function main() {
@@ -26,8 +29,8 @@ class MainAssets {
 		final assetListJson = Json.stringify(assetList);
 		File.saveContent('bin/assetList.json', assetListJson);
 
-		#if macro
-		trace(AssetSystem.f_texture);
+		#if !macro
+		trace(AssetSystem.assetsrc.f_texture);
 		#end
 	}
 
