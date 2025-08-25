@@ -1,5 +1,5 @@
 --cmd npm install five-server
---cmd npm install basis_universal
+--cmd npm install texture-compressor
 --cmd haxelib newrepo
 --cmd haxelib install thx.core
 --cmd haxelib install buddy
