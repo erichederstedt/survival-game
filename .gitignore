@@ -7,3 +7,5 @@ package-lock.json
 *.dds
 *.ktx
 *.ktx2
+bin/assetList.json
+bin/assetsrc/
