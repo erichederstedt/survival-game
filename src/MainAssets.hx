@@ -1,5 +1,6 @@
 package;
 
+import assets.AssetList;
 import assets.TextureAsset;
 import haxe.Json;
 import haxe.io.Path;
@@ -16,14 +17,11 @@ class MainAssets {
 		final imagesToEncode:Array<String> = [];
 		findFiles(assetsrc, imagesToEncode, (file:Path) -> imageFormats.contains(file.ext));
 
-		final textureAssets:Array<TextureAsset> = [];
+		final assetList:AssetList = new AssetList();
 		for (image in imagesToEncode) {
-			textureAssets.push(new TextureAsset(image));
+			assetList.textures.push(new TextureAsset(image));
 		}
 
-		final assetList:Dynamic = {
-			textures: textureAssets
-		};
 		final assetListJson = Json.stringify(assetList);
 		File.saveContent('bin/assetList.json', assetListJson);
 	}
