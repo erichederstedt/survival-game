@@ -22,7 +22,7 @@ function quad():Quad {
 }
 
 class Renderer {
-	public static final quadsToDraw:LinearAllocator<Quad> = new LinearAllocator<Quad>(2048, quad());
+	public static final quadsToDraw:LinearAllocator<Quad> = new LinearAllocator<Quad>(2048, quad);
 	public static final canvas:CanvasElement = getCanvasElement('webgl');
 	public static final gl:GL = canvas.getContextWebGL2();
 	public static final mainProgram:Program = new Program(new Shader('vertex.glsl', ShaderType.Vertex), new Shader('fragment.glsl', ShaderType.Fragment));

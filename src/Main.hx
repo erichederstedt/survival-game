@@ -23,6 +23,8 @@ class Main {
 			pos.x += speed * Engine.delta_time;
 
 		Renderer.drawQuad(pos, vec2(50.0));
+		Renderer.drawQuad(vec2(50.0, 50.0), vec2(50.0));
+		Renderer.drawQuad(vec2(100.0, 100.0), vec2(50.0));
 		Renderer.render();
 	}
 }
