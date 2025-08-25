@@ -59,11 +59,12 @@ enum abstract Quality(String) to String from String {
 	var VeryHigh;
 }
 
+@:json
 class TextureData {
-	final file:String;
-	final compressionType:CompressionType;
-	final compression:Compression;
-	final quality:Quality;
+	public final file:String;
+	public final compressionType:CompressionType;
+	public final compression:Compression;
+	public final quality:Quality;
 
 	public function new(file:String, compressionType:CompressionType, compression:Compression, quality:Quality) {
 		this.file = file;
@@ -130,16 +131,17 @@ function CompressionQuality(quality:Quality, compressionType:CompressionType):St
 	}
 }
 
+@:json
 class TextureAsset {
-	final file:String;
-	final data:Array<TextureData>;
+	public final file:String;
+	public final data:Array<TextureData>;
 
-	public function new(file:String) {
+	public function new(file:String, ?data:Array<TextureData>) {
 		this.file = file;
-		this.data = [];
-
-		this.data.push(convertTexture(file, CompressionType.s3tc, Compression.DXT1, Quality.Medium));
-		this.data.push(convertTexture(file, CompressionType.etc, Compression.ETC1, Quality.Medium));
+		if (data == null)
+			this.data = [];
+		else
+			this.data = data.copy();
 	}
 
 	public static function convertTexture(image:String, compressionType:CompressionType, compression:Compression, quality:Quality):TextureData {

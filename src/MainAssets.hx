@@ -1,6 +1,7 @@
 package;
 
 import assets.AssetList;
+import assets.AssetSystem;
 import assets.TextureAsset;
 import haxe.Json;
 import haxe.io.Path;
@@ -19,11 +20,18 @@ class MainAssets {
 
 		final assetList:AssetList = new AssetList();
 		for (image in imagesToEncode) {
-			assetList.textures.push(new TextureAsset(image));
+			assetList.textures.push(new TextureAsset(image, [
+				TextureAsset.convertTexture(image, CompressionType.s3tc, Compression.DXT1, Quality.Medium),
+				TextureAsset.convertTexture(image, CompressionType.etc, Compression.ETC1, Quality.Medium)
+			]));
 		}
 
 		final assetListJson = Json.stringify(assetList);
 		File.saveContent('bin/assetList.json', assetListJson);
+
+		#if !macro
+		trace(AssetSystem.f_texture);
+		#end
 	}
 
 	public static function createDir(dir:String) {

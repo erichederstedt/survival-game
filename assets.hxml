@@ -1,5 +1,6 @@
 -x MainAssets
 -cp src
+-cp macro
 
 -dce full
 --debug
