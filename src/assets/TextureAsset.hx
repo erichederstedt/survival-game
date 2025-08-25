@@ -132,14 +132,14 @@ function CompressionQuality(quality:Quality, compressionType:CompressionType):St
 
 class TextureAsset {
 	final file:String;
-	final textures:Array<TextureData>;
+	final data:Array<TextureData>;
 
 	public function new(file:String) {
 		this.file = file;
-		this.textures = [];
+		this.data = [];
 
-		this.textures.push(convertTexture(file, CompressionType.s3tc, Compression.DXT1, Quality.Medium));
-		this.textures.push(convertTexture(file, CompressionType.etc, Compression.ETC1, Quality.Medium));
+		this.data.push(convertTexture(file, CompressionType.s3tc, Compression.DXT1, Quality.Medium));
+		this.data.push(convertTexture(file, CompressionType.etc, Compression.ETC1, Quality.Medium));
 	}
 
 	public static function convertTexture(image:String, compressionType:CompressionType, compression:Compression, quality:Quality):TextureData {
