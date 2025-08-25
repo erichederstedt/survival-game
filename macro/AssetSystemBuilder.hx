@@ -1,6 +1,5 @@
 package macro;
 
-import assets.TextureAsset;
 import haxe.Json;
 import haxe.io.Path;
 import haxe.macro.Context;
