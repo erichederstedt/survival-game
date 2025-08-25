@@ -95,7 +95,7 @@ class TextureAsset {
 		try {
 			final directory = 'bin/${imagePath.dir}';
 			final outputFile = '${imagePath.dir}/${imagePath.file}.${compressionType}.${compression}.ktx';
-			Main.createDir(directory);
+			MainAssets.createDir(directory);
 
 			final cli:String = 'npx texture-compressor -i ${image} -t ${compressionType} -c ${compression} -q ${compressionQuality(quality, compressionType)} -o bin/${outputFile} -m -vb';
 			final process = new Process(cli);
@@ -175,7 +175,7 @@ class TextureAsset {
 	}
 }
 
-class Main {
+class MainAssets {
 	public static function main() {
 		final test:Compression = Compression.DXT1;
 		var assetsrc = "./assetsrc";
