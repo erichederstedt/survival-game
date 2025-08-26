@@ -1,7 +1,6 @@
 package assets;
 
 import haxe.io.Path;
-import sys.io.Process;
 
 enum abstract CompressionType(String) to String from String {
 	var astc;
@@ -142,33 +141,5 @@ class TextureAsset {
 			this.data = [];
 		else
 			this.data = data.copy();
-	}
-
-	public static function convertTexture(image:String, compressionType:CompressionType, compression:Compression, quality:Quality):TextureData {
-		var textureData:TextureData = null;
-		final imagePath = new Path(image);
-		try {
-			final directory = 'bin/${imagePath.dir}';
-			final outputFile = '${imagePath.dir}/${imagePath.file}.${compressionType}.${compression}.ktx';
-			MainAssets.createDir(directory);
-
-			final cli:String = 'npx texture-compressor -i ${image} -t ${compressionType} -c ${compression} -q ${CompressionQuality(quality, compressionType)} -o bin/${outputFile} -m -vb';
-			final process = new Process(cli);
-
-			final output = process.stdout.readAll().toString();
-			Sys.print(output);
-
-			final exitCode = process.exitCode();
-			if (exitCode != 0)
-				trace('texture-compressor failed! CLI:\n${cli}');
-			else
-				textureData = new TextureData(outputFile, compressionType, compression, quality);
-
-			process.close();
-		} catch (e:Dynamic) {
-			trace('Error executing command: $e');
-		}
-
-		return textureData;
 	}
 }

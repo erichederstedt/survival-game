@@ -5,3 +5,4 @@
 --cmd haxelib install buddy
 --cmd haxelib install vector-math
 --cmd haxelib install haxe.Signal
+--cmd haxelib install haxe.KTX

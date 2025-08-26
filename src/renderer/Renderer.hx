@@ -1,6 +1,7 @@
 package renderer;
 
 import VectorMath;
+import assets.AssetSystem;
 import haxe.io.Float32Array;
 import js.Browser;
 import js.html.CanvasElement;
@@ -68,7 +69,8 @@ class Renderer {
 		new InputElementDesc('a_position', Format.RGB32_FLOAT),
 		new InputElementDesc('a_uv', Format.RG32_FLOAT)
 	]);
-	public static final texture:Texture = new Texture("f-texture.png");
+	public static final texture:Texture = Texture.fromImage("f-texture.png");
+	public static final texture2:Texture = Texture.fromKtx(AssetSystem.assetsrc.f_texture);
 
 	public static function getCanvasElement(id:String):CanvasElement {
 		var element = Browser.document.getElementById(id);
@@ -106,7 +108,7 @@ class Renderer {
 		mainProgram.bind();
 		triangle.bind();
 		inputLayout.bind(mainProgram);
-		texture.bind(mainProgram, "u_texture");
+		texture2.bind(mainProgram, "u_texture");
 
 		for (i in 0...quadsToDraw.length) {
 			final quad = quadsToDraw.data[i];

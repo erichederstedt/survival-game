@@ -4,6 +4,7 @@
 -lib thx.core
 -lib vector-math
 -lib haxe.Signal
+-lib haxe.KTX
 
 --js bin/main.js
 # -dce full
