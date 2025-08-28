@@ -6,7 +6,6 @@ import haxe.KTX;
 import haxe.Signal;
 import haxe.io.Bytes;
 import js.html.Console;
-import js.lib.ArrayBufferView;
 import js.lib.Uint8Array;
 
 class Texture {

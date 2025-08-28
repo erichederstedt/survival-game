@@ -21,4 +21,10 @@ class VertexBuffer {
 		Renderer.gl.bindVertexArray(null);
 		this.buffer.unbind();
 	}
+
+	public function setInputLayout(program:Program, inputLayout:InputLayout) {
+		bind();
+		inputLayout.bind(program);
+		unbind();
+	}
 }
