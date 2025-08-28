@@ -1,30 +1,77 @@
 package renderer;
 
 import assets.AssetSystem;
+import glm.GLM;
 import glm.Mat4;
-import glm.Vec2;
+import glm.Quat;
+import glm.Vec3;
 import haxe.io.Float32Array;
 import js.Browser;
 import js.html.CanvasElement;
 import renderer.InputLayout;
 import renderer.Shader;
 import utils.LinearAllocator;
+import utils.Math;
 
 @:structInit
 class Quad {
-	public var pos:Vec2;
-	public var size:Vec2;
+	public var transform:Mat4;
 }
 
 function quad():Quad {
 	return {
-		pos: new Vec2(0.0),
-		size: new Vec2(0.0),
+		transform: Mat4.identity(new Mat4()),
 	};
+}
+
+@:structInit
+class Camera {
+	public var pos:Vec3;
+	public var rot:Vec3;
+	public var fov:Float;
+	public var near:Float;
+	public var far:Float;
+
+	public static final transform:Mat4 = new Mat4();
+	public static final quat:Quat = new Quat();
+
+	public function forward():Vec3 {
+		final transform = GLM.transform(pos, Quat.fromEuler(rot.x, rot.y, rot.z, quat), new Vec3(1.0, 1.0, 1.0), transform);
+		return new Vec3(transform.r0c2, transform.r1c2, transform.r2c2);
+	}
+
+	public function right():Vec3 {
+		final transform = GLM.transform(pos, Quat.fromEuler(rot.x, rot.y, rot.z, quat), new Vec3(1.0, 1.0, 1.0), transform);
+		return new Vec3(transform.r0c0, transform.r1c0, transform.r2c0);
+	}
+
+	public function up():Vec3 {
+		final transform = GLM.transform(pos, Quat.fromEuler(rot.x, rot.y, rot.z, quat), new Vec3(1.0, 1.0, 1.0), transform);
+		return new Vec3(transform.r0c1, transform.r1c1, transform.r2c1);
+	}
+}
+
+function camera():Camera {
+	return {
+		pos: new Vec3(),
+		rot: new Vec3(),
+		fov: Math.toRadian(60.0),
+		near: 0.1,
+		far: 1000.0,
+	};
+}
+
+function cameraCopy(a:Camera, b:Camera) {
+	Vec3.copy(b.pos, a.pos);
+	Vec3.copy(b.rot, a.rot);
+	a.fov = b.fov;
+	a.near = b.near;
+	a.far = b.far;
 }
 
 class Renderer {
 	public static final quadsToDraw:LinearAllocator<Quad> = new LinearAllocator<Quad>(2048, quad);
+	public static final camerasToDraw:LinearAllocator<Camera> = new LinearAllocator<Camera>(8, camera);
 	public static final canvas:CanvasElement = getCanvasElement('webgl');
 	public static final gl:GL = canvas.getContextWebGL2();
 	public static final mainProgram:Program = new Program(new Shader('vertex.glsl', ShaderType.Vertex), new Shader('fragment.glsl', ShaderType.Fragment));
@@ -81,10 +128,14 @@ class Renderer {
 		return cast(element, CanvasElement);
 	}
 
-	public static function drawQuad(pos:Vec2, size:Vec2) {
+	public static function addCamera(camera:Camera) {
+		final target = camerasToDraw.alloc();
+		cameraCopy(target, camera);
+	}
+
+	public static function drawQuad(transform:Mat4) {
 		var quad = quadsToDraw.alloc();
-		quad.pos = pos;
-		quad.size = size;
+		quad.transform = transform;
 	}
 
 	public static function resize() {
@@ -100,6 +151,7 @@ class Renderer {
 
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(GL.COLOR_BUFFER_BIT);
+		gl.disable(GL.CULL_FACE);
 
 		if (mainProgram.status != Status.Succesful) {
 			quadsToDraw.reset();
@@ -111,14 +163,22 @@ class Renderer {
 		inputLayout.bind(mainProgram);
 		texture2.bind(mainProgram, "u_texture");
 
-		mainProgram.setVec2("u_test", new Vec2(0.25, 1.0));
+		for (i in 0...camerasToDraw.length) {
+			final camera = camerasToDraw.data[i];
+			final camera_transform = GLM.transform(camera.pos, Quat.fromEuler(camera.rot.x, camera.rot.y, camera.rot.z, new Quat()), new Vec3(1.0, 1.0, 1.0),
+				new Mat4());
+			final view = Mat4.invert(camera_transform, new Mat4());
+			final proj = GLM.perspective(camera.fov, canvas.width / canvas.height, camera.near, camera.far, new Mat4());
+			final viewProj = proj * view;
 
-		for (i in 0...quadsToDraw.length) {
-			final quad = quadsToDraw.data[i];
-			gl.viewport(Std.int(quad.pos.x), Std.int(quad.pos.y), Std.int(quad.size.x), Std.int(quad.size.y));
-			gl.drawArrays(GL.TRIANGLES, 0, 6);
+			for (i in 0...quadsToDraw.length) {
+				final quad = quadsToDraw.data[i];
+				mainProgram.setMat4("u_mvp", viewProj * quad.transform);
+				gl.drawArrays(GL.TRIANGLES, 0, 6);
+			}
 		}
 
 		quadsToDraw.reset();
+		camerasToDraw.reset();
 	}
 }

@@ -176,7 +176,7 @@ class Program {
 		if (uniform == null)
 			return; // Should probably throw error
 
-		Renderer.gl.uniformMatrix3fv(uniform.location, transpose, data.toFloatArray(), 0, 0);
+		Renderer.gl.uniformMatrix4fv(uniform.location, transpose, data.toFloatArray(), 0, 0);
 	}
 
 	public function setUInt(name:String, data:UInt) {
