@@ -2,7 +2,7 @@
 -cp src
 
 -lib thx.core
--lib vector-math
+-lib glm
 -lib haxe.Signal
 -lib haxe.KTX
 

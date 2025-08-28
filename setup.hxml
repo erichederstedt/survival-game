@@ -3,6 +3,6 @@
 --cmd haxelib newrepo
 --cmd haxelib install thx.core
 --cmd haxelib install buddy
---cmd haxelib install vector-math
+--cmd haxelib install glm
 --cmd haxelib install haxe.Signal
 --cmd haxelib install haxe.KTX

@@ -1,5 +1,11 @@
 package renderer;
 
+import glm.Mat2;
+import glm.Mat3;
+import glm.Mat4;
+import glm.Vec2;
+import glm.Vec3;
+import glm.Vec4;
 import js.html.Console;
 import js.html.webgl.UniformLocation;
 import utils.Range;
@@ -154,7 +160,7 @@ class Program {
 		if (uniform == null)
 			return; // Should probably throw error
 
-		Renderer.gl.uniformMatrix2fv(uniform.location, transpose, data.copyIntoArray(new Array<Float>(), 0), 0, 0);
+		Renderer.gl.uniformMatrix2fv(uniform.location, transpose, data.toFloatArray(), 0, 0);
 	}
 
 	public function setMat3(name:String, data:Mat3, transpose:Bool = false,) {
@@ -162,7 +168,7 @@ class Program {
 		if (uniform == null)
 			return; // Should probably throw error
 
-		Renderer.gl.uniformMatrix3fv(uniform.location, transpose, data.copyIntoArray(new Array<Float>(), 0), 0, 0);
+		Renderer.gl.uniformMatrix3fv(uniform.location, transpose, data.toFloatArray(), 0, 0);
 	}
 
 	public function setMat4(name:String, data:Mat4, transpose:Bool = false,) {
@@ -170,7 +176,7 @@ class Program {
 		if (uniform == null)
 			return; // Should probably throw error
 
-		Renderer.gl.uniformMatrix3fv(uniform.location, transpose, data.copyIntoArray(new Array<Float>(), 0), 0, 0);
+		Renderer.gl.uniformMatrix3fv(uniform.location, transpose, data.toFloatArray(), 0, 0);
 	}
 
 	public function setUInt(name:String, data:UInt) {

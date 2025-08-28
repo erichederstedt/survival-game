@@ -1,7 +1,8 @@
 package renderer;
 
-import VectorMath;
 import assets.AssetSystem;
+import glm.Mat4;
+import glm.Vec2;
 import haxe.io.Float32Array;
 import js.Browser;
 import js.html.CanvasElement;
@@ -17,8 +18,8 @@ class Quad {
 
 function quad():Quad {
 	return {
-		pos: vec2(0.0),
-		size: vec2(0.0),
+		pos: new Vec2(0.0),
+		size: new Vec2(0.0),
 	};
 }
 
@@ -110,7 +111,7 @@ class Renderer {
 		inputLayout.bind(mainProgram);
 		texture2.bind(mainProgram, "u_texture");
 
-		mainProgram.setVec2("u_test", vec2(0.25, 1.0));
+		mainProgram.setVec2("u_test", new Vec2(0.25, 1.0));
 
 		for (i in 0...quadsToDraw.length) {
 			final quad = quadsToDraw.data[i];

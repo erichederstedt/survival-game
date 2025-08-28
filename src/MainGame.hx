@@ -1,7 +1,7 @@
 package;
 
-import VectorMath;
 import engine.*;
+import glm.Vec2;
 import renderer.Renderer;
 
 class MainGame {
@@ -9,7 +9,7 @@ class MainGame {
 		Engine.start(main_loop);
 	}
 
-	public static var pos = vec2(0.0);
+	public static var pos = new Vec2();
 
 	public static function main_loop() {
 		final speed:Float = 0.2;
@@ -22,9 +22,9 @@ class MainGame {
 		if (Input.key_held(Key.D))
 			pos.x += speed * Engine.delta_time;
 
-		Renderer.drawQuad(pos, vec2(50.0));
-		Renderer.drawQuad(vec2(50.0, 50.0), vec2(50.0));
-		Renderer.drawQuad(vec2(100.0, 100.0), vec2(50.0));
+		Renderer.drawQuad(pos, new Vec2(50.0, 50.0));
+		Renderer.drawQuad(new Vec2(50.0, 50.0), new Vec2(50.0, 50.0));
+		Renderer.drawQuad(new Vec2(100.0, 100.0), new Vec2(50.0, 50.0));
 		Renderer.render();
 	}
 }
