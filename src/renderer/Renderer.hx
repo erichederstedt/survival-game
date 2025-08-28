@@ -110,6 +110,8 @@ class Renderer {
 		inputLayout.bind(mainProgram);
 		texture2.bind(mainProgram, "u_texture");
 
+		mainProgram.setVec2("u_test", vec2(0.25, 1.0));
+
 		for (i in 0...quadsToDraw.length) {
 			final quad = quadsToDraw.data[i];
 			gl.viewport(Std.int(quad.pos.x), Std.int(quad.pos.y), Std.int(quad.size.x), Std.int(quad.size.y));
