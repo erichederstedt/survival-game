@@ -6,3 +6,17 @@
 --cmd haxelib install glm
 --cmd haxelib install haxe.Signal
 --cmd haxelib install haxe.KTX
+
+--next
+
+-x MainSetup
+-cp src
+
+-dce full
+--debug
+-D no-deprecation-warnings
+
+--next
+
+--cmd haxelib install spine-haxe.zip
+--cmd rm -rf spine-haxe.zip
