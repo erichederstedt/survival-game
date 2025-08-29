@@ -5,6 +5,7 @@
 -lib glm
 -lib haxe.Signal
 -lib haxe.KTX
+-lib spine-haxe
 
 --js bin/main.js
 # -dce full
