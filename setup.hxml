@@ -7,16 +7,16 @@
 --cmd haxelib install haxe.Signal
 --cmd haxelib install haxe.KTX
 
---next
+#--next
 
--x MainSetup
--cp src
+#-x MainSetup
+#-cp src
 
--dce full
---debug
--D no-deprecation-warnings
+#-dce full
+#--debug
+#-D no-deprecation-warnings
 
---next
+#--next
 
---cmd haxelib install spine-haxe.zip
---cmd rm -rf spine-haxe.zip
+#--cmd haxelib install spine-haxe.zip
+#--cmd rm -rf spine-haxe.zip

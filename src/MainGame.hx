@@ -7,6 +7,7 @@ import glm.Quat;
 import glm.Vec2;
 import glm.Vec3;
 import renderer.Renderer;
+import renderer.SpineSprite;
 
 class MainGame {
 	public static var camera = renderer.Renderer.camera();
@@ -15,6 +16,7 @@ class MainGame {
 		Engine.start(main_loop);
 
 		camera.pos.z = 10.0;
+		final spineSprite = new SpineSprite();
 	}
 
 	public static var pos = new Vec2();
