@@ -6,6 +6,7 @@ import glm.Mat4;
 import glm.Quat;
 import glm.Vec3;
 import haxe.io.Float32Array;
+import haxe.io.UInt32Array;
 import js.Browser;
 import js.html.CanvasElement;
 import renderer.InputLayout;
@@ -94,18 +95,6 @@ class Renderer {
 		0.0, // Z
 		1.0, // U
 		0.0, // V,
-		// Vertex 3
-		- 1.0, // X
-		- 1.0, // Y
-		0.0, // Z
-		0.0, // U
-		1.0, // V
-		// Vertex 4
-		1.0, // X
-		1.0, // Y
-		0.0, // Z
-		1.0, // U
-		0.0, // V,
 		// Vertex 5
 		1.0, // X
 		- 1.0, // Y
@@ -119,6 +108,7 @@ class Renderer {
 	]);
 	public static final texture:Texture = Texture.fromImage("f-texture.png");
 	public static final texture2:Texture = Texture.fromKtx(AssetSystem.assetsrc.f_texture);
+	public static final indexBuffer:IndexBuffer = new IndexBuffer(UInt32Array.fromArray([0, 1, 2, 0, 2, 3]));
 
 	public static function getCanvasElement(id:String):CanvasElement {
 		var element = Browser.document.getElementById(id);
@@ -151,7 +141,9 @@ class Renderer {
 
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(GL.COLOR_BUFFER_BIT);
-		gl.disable(GL.CULL_FACE);
+		gl.enable(GL.CULL_FACE);
+		gl.cullFace(GL.BACK);
+		gl.frontFace(GL.CW);
 
 		if (mainProgram.status != Status.Succesful) {
 			quadsToDraw.reset();
@@ -162,6 +154,7 @@ class Renderer {
 		triangle.bind();
 		inputLayout.bind(mainProgram);
 		texture2.bind(mainProgram, "u_texture");
+		indexBuffer.bind();
 
 		for (i in 0...camerasToDraw.length) {
 			final camera = camerasToDraw.data[i];
@@ -172,13 +165,19 @@ class Renderer {
 			final viewProj = proj * view;
 
 			for (i in 0...quadsToDraw.length) {
-				final quad = quadsToDraw.data[i];
-				mainProgram.setMat4("u_mvp", viewProj * quad.transform);
-				gl.drawArrays(GL.TRIANGLES, 0, 6);
+				mainProgram.setMat4("u_mvp", viewProj * quadsToDraw.data[i].transform);
+				drawIndexed(indexBuffer.length);
+				#if debug
+				drawIndexed(indexBuffer.length, 0, PrimitiveType.LineLoop);
+				#end
 			}
 		}
 
 		quadsToDraw.reset();
 		camerasToDraw.reset();
+	}
+
+	public static function drawIndexed(count:Int, offset:Int = 0, countprimitiveType:PrimitiveType = PrimitiveType.Triangles) {
+		gl.drawElements(countprimitiveType, count, GL.UNSIGNED_INT, offset);
 	}
 }

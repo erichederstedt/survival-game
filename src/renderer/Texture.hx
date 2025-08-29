@@ -85,6 +85,8 @@ class Texture {
 						mip.data.get_view().getData());
 				}
 			}
+			var ext = Renderer.gl.getExtension("EXT_texture_filter_anisotropic");
+			Renderer.gl.texParameterf(GL.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, 4);
 
 			_this.status = Status.Succesful;
 			_this.onSucces(_this);
