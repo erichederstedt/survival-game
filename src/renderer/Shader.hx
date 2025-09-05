@@ -3,6 +3,7 @@ package renderer;
 import haxe.Http;
 import haxe.Signal;
 import js.html.Console;
+import utils.FileSystem;
 
 enum abstract ShaderType(Int) to Int {
 	var Vertex = GL.VERTEX_SHADER;
@@ -31,8 +32,7 @@ class Shader {
 		if (onError != null)
 			this.onError += onError;
 
-		final req = new Http(path);
-		req.onData = (data:String) -> {
+		FileSystem.getTextAsync(path, (data:String) -> {
 			trace(data);
 
 			Renderer.gl.shaderSource(this.shader, data);
@@ -47,13 +47,11 @@ class Shader {
 				this.status = Status.Succesful;
 				this.onSuccess(this);
 			}
-		};
-		req.onError = (msg:String) -> {
+		}, (msg:String) -> {
 			this.status = Status.Error;
 			Console.error('Failed to load shader! Path: ${path}\n${msg}');
 
 			this.onError(this, msg);
-		};
-		req.request(false);
+		});
 	}
 }

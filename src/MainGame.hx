@@ -16,7 +16,7 @@ class MainGame {
 		Engine.start(main_loop);
 
 		camera.pos.z = 10.0;
-		final spineSprite = new SpineSprite();
+		// final spineSprite = new SpineSprite();
 	}
 
 	public static var pos = new Vec2();

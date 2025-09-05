@@ -7,38 +7,42 @@ import haxe.Signal;
 import haxe.io.Bytes;
 import js.html.Console;
 import js.lib.Uint8Array;
+import utils.FileSystem;
 
 class Texture {
 	final path:String;
-	final image:js.html.Image; // Used by PNG textures
-	final data:Http; // Used by KTX textures
 	final texture:js.html.webgl.Texture;
+
+	public var width(default, null):Int;
+	public var height(default, null):Int;
 
 	public final onSucces:Signal<(texture:Texture) -> Void>;
 	public final onError:Signal<(texture:Texture, msg:String) -> Void>;
 
 	public var status(default, null):Status;
 
-	function new(path:String, image:js.html.Image, data:Http, texture:js.html.webgl.Texture) {
+	function new(path:String, texture:js.html.webgl.Texture) {
 		this.path = path;
-		this.image = image;
-		this.data = data;
 		this.texture = texture;
 		this.onSucces = new Signal();
 		this.onError = new Signal();
+		this.width = 1;
+		this.height = 1;
 	}
 
 	public static function fromImage(path:String, generateMips:Bool = true):Texture {
-		final _this = new Texture(path, new js.html.Image(), null, Renderer.gl.createTexture());
+		final _this = new Texture(path, Renderer.gl.createTexture());
 		_this.status = Status.Loading;
 
 		Renderer.gl.bindTexture(GL.TEXTURE_2D, _this.texture);
 		Renderer.gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, 1, 1, 0, GL.RGBA, GL.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
 
-		_this.image.crossOrigin = "anonymous";
-		_this.image.addEventListener('load', () -> {
+		FileSystem.getImageAsync(path, (image:js.html.Image) -> {
 			Renderer.gl.bindTexture(GL.TEXTURE_2D, _this.texture);
-			Renderer.gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, _this.image);
+			Renderer.gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, image);
+
+			_this.width = image.width;
+			_this.height = image.height;
 
 			if (generateMips && _this.isPowerOf2()) {
 				Renderer.gl.generateMipmap(GL.TEXTURE_2D);
@@ -51,28 +55,28 @@ class Texture {
 
 			_this.status = Status.Succesful;
 			_this.onSucces(_this);
-		});
-		_this.image.addEventListener('error', () -> {
+		}, (msg:String) -> {
 			Console.error('Failed to load texture at path: ${_this.path}');
 			_this.status = Status.Error;
 			_this.onError(_this, 'Failed to load texture at path: ${_this.path}');
 		});
-		_this.image.src = path;
 
 		return _this;
 	}
 
 	public static function fromKtx(texture:TextureAsset):Texture {
 		final path = texture.data[0].file; // TODO(Eric): Make texture data selection be based on support of compression formats.
-		trace(path);
-		final _this = new Texture(path, null, new Http(path), Renderer.gl.createTexture());
+		final _this = new Texture(path, Renderer.gl.createTexture());
 		_this.status = Status.Loading;
 
 		Renderer.gl.bindTexture(GL.TEXTURE_2D, _this.texture);
 		Renderer.gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, 1, 1, 0, GL.RGBA, GL.UNSIGNED_BYTE, new Uint8Array([0, 0, 255, 255]));
-		_this.data.onBytes = (data:Bytes) -> {
+
+		FileSystem.getBytesAsync(path, (data:Bytes) -> {
 			Renderer.gl.bindTexture(GL.TEXTURE_2D, _this.texture);
 			final ktxData:KTXData = KTX.load(data);
+			_this.width = ktxData.pixelWidth;
+			_this.height = ktxData.pixelHeight;
 			for (i in 0...ktxData.mips.length) {
 				final mip:KTXMipLevel = ktxData.mips[i];
 				if (ktxData.glFormat == 0) {
@@ -90,20 +94,18 @@ class Texture {
 
 			_this.status = Status.Succesful;
 			_this.onSucces(_this);
-		};
-		_this.data.onError = (msg:String) -> {
+		}, (msg:String) -> {
 			_this.status = Status.Error;
 			Console.error('Failed to load texture! Path: ${path}\n${msg}');
 
 			_this.onError(_this, msg);
-		};
-		_this.data.request(false);
+		});
 
 		return _this;
 	}
 
 	public function isPowerOf2():Bool {
-		return (this.image.width & (this.image.width - 1)) == 0 && (this.image.height & (this.image.height - 1)) == 0;
+		return (this.width & (this.width - 1)) == 0 && (this.height & (this.height - 1)) == 0;
 	}
 
 	public function bind(program:Program, uniformName:String, textureUnit:Int = 0) {

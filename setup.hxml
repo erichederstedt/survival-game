@@ -6,6 +6,7 @@
 --cmd haxelib install glm
 --cmd haxelib install haxe.Signal
 --cmd haxelib install haxe.KTX
+--cmd haxelib install spine-haxe-latest-fixed.zip
 
 #--next
 
