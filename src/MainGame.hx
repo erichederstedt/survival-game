@@ -45,7 +45,7 @@ class MainGame {
 		spineSprite.update(Engine.delta_time);
 
 		Renderer.addCamera(camera);
-		// Renderer.drawQuad(GLM.transform(new Vec3(10.0, 0.0, 0.0), Quat.fromEuler(0.0, 0.0, 0.0, new Quat()), new Vec3(5.0, 5.0, 5.0), new Mat4()));
+		Renderer.drawQuad(GLM.transform(new Vec3(10.0, 0.0, 0.0), Quat.fromEuler(0.0, 0.0, 0.0, new Quat()), new Vec3(5.0, 5.0, 5.0), new Mat4()));
 		// Renderer.drawQuad(GLM.transform(new Vec3(0.0, 0.0, 0.0), Quat.fromEuler(0.0, 0.0, 0.0, new Quat()), new Vec3(5.0, 5.0, 5.0), new Mat4()));
 		Renderer.drawQuad(GLM.transform(new Vec3(-10.0, 0.0, 0.0), Quat.fromEuler(0.0, 0.0, 0.0, new Quat()), new Vec3(5.0, 5.0, 5.0), new Mat4()));
 		Renderer.drawSpine(spineSprite);

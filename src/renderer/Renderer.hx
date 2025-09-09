@@ -78,30 +78,30 @@ class Renderer {
 	public static final gl:GL = canvas.getContextWebGL2();
 	public static final mainProgram:Program = new Program(new Shader('vertex.glsl', ShaderType.Vertex), new Shader('fragment.glsl', ShaderType.Fragment));
 	public static final quad:VertexBuffer = new VertexBuffer(Float32Array.fromArray([
-		// Vertex 0 (BL)
+		// Vertex 0 (BR)
+		1.0, // X
+		- 1.0, // Y
+		0.0, // Z
+		1.0, // U
+		1.0, // V
+		// Vertex 1 (BL)
 		- 1.0, // X
 		- 1.0, // Y
 		0.0, // Z
 		0.0, // U
 		1.0, // V
-		// Vertex 1 (UL)
+		// Vertex 2 (UL)
 		- 1.0, // X
 		1.0, // Y
 		0.0, // Z
 		0.0, // U
 		0.0, // V
-		// Vertex 2 (UR)
+		// Vertex 3 (UR)
 		1.0, // X
 		1.0, // Y
 		0.0, // Z
 		1.0, // U
 		0.0, // V,
-		// Vertex 3 (BR)
-		1.0, // X
-		- 1.0, // Y
-		0.0, // Z
-		1.0, // U
-		1.0, // V
 	]).view);
 	public static final inputLayout:InputLayout = new InputLayout([
 		new InputElementDesc('a_position', Format.RGB32_FLOAT),
@@ -109,7 +109,7 @@ class Renderer {
 	]);
 	public static final texture:Texture = Texture.fromImage("f-texture.png");
 	public static final texture2:Texture = Texture.fromKtx(AssetSystem.assetsrc.f_texture);
-	public static final indexBuffer:IndexBuffer = new IndexBuffer(UInt32Array.fromArray([0, 1, 2, 0, 2, 3]));
+	public static final indexBuffer:IndexBuffer = new IndexBuffer(UInt32Array.fromArray([0, 1, 2, 2, 3, 0]));
 
 	public static function getCanvasElement(id:String):CanvasElement {
 		var element = Browser.document.getElementById(id);
@@ -146,12 +146,15 @@ class Renderer {
 
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(GL.COLOR_BUFFER_BIT);
+		gl.clearDepth(0.0);
 		gl.enable(GL.CULL_FACE);
 		gl.cullFace(GL.BACK);
 		gl.frontFace(GL.CW);
 
 		if (mainProgram.status != Status.Succesful) {
 			quadsToDraw.reset();
+			camerasToDraw.reset();
+			spinesToDraw = new Array<SpineSprite>();
 			return;
 		}
 
@@ -169,6 +172,7 @@ class Renderer {
 			final proj = GLM.perspective(camera.fov, canvas.width / canvas.height, camera.near, camera.far, new Mat4());
 			final viewProj = proj * view;
 
+			mainProgram.setInt("u_is_spine", 0);
 			for (i in 0...quadsToDraw.length) {
 				mainProgram.setMat4("u_mvp", viewProj * quadsToDraw.data[i].transform);
 				drawIndexed(indexBuffer.length);
@@ -180,11 +184,11 @@ class Renderer {
 			for (spine in spinesToDraw) {
 				spine.draw(gl, mainProgram, viewProj);
 			}
-			spinesToDraw = new Array<SpineSprite>();
 		}
 
 		quadsToDraw.reset();
 		camerasToDraw.reset();
+		spinesToDraw = new Array<SpineSprite>();
 	}
 
 	public static function drawIndexed(count:Int, offset:Int = 0, countprimitiveType:PrimitiveType = PrimitiveType.Triangles) {

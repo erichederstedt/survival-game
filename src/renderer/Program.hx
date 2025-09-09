@@ -124,7 +124,7 @@ class Program {
 	}
 
 	public function setFloatArray(name:String, data:Array<Float>) {
-		final uniform = uniformMap[name];
+		final uniform = uniformMap[name + "[0]"];
 		if (uniform == null)
 			return; // Should probably throw error
 

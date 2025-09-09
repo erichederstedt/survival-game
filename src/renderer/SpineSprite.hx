@@ -1,6 +1,9 @@
 package renderer;
 
+import glm.Mat2;
 import glm.Mat4;
+import glm.Quat;
+import glm.Vec2;
 import renderer.SpineTextureLoader;
 import spine.Bone;
 import spine.Physics;
@@ -26,9 +29,10 @@ class SpineSprite {
 		atlas = new TextureAtlas(FileSystem.getText("assets/raptor.atlas"), new SpineTextureLoader("assets/raptor-pro.atlas"));
 		skeletonData = SkeletonData.from(FileSystem.getText("assets/raptor-pro.json"), atlas, .25);
 		skeleton = new Skeleton(skeletonData);
-		Bone.yDown = true;
+		Bone.yDown = false;
 		animationStateData = new AnimationStateData(skeletonData);
 		animationState = new AnimationState(animationStateData);
+		skeleton.setToSetupPose();
 	}
 
 	private static var QUAD_INDICES:Array<Int> = [0, 1, 2, 2, 3, 0];
@@ -43,12 +47,8 @@ class SpineSprite {
 	public function draw(gl:GL, program:Program, viewProj:Mat4) {
 		final drawOrder:Array<Slot> = skeleton.drawOrder;
 		for (slot in drawOrder) {
-			final positions = new Array<Float>(); // Array of pairs of X and Y values(Floats)
-			final uvs = new Array<Float>(); // Array of pairs of U and V values(Floats)
 			if (Std.isOfType(slot.attachment, RegionAttachment)) {
 				final attachement:RegionAttachment = cast slot.attachment;
-				positions.resize(4 * 2);
-				positions.resize(4 * 2);
 				var offset = 0;
 				final stride = 2;
 
@@ -59,19 +59,12 @@ class SpineSprite {
 				untyped final offsets = attachement.offsets; // 8 Float array.
 				final x = bone.worldX, y = bone.worldY;
 				final a = bone.a, b = bone.b, c = bone.c, d = bone.d;
-				var offsetX:Float = 0, offsetY:Float = 0;
-				// @formatter:off
-				final transform = new Mat4(
-					a, b, 0.0, 0.0, 
-					c, d, 0.0, 0.0, 
-					0.0, 0.0, 1.0, 0.0, 
-					0.0, 0.0, 0.0, 1.0
-				);
-				// @formatter:on
-				trace(transform);
-				program.setMat4("u_mvp", viewProj * glm.GLM.translate(new glm.Vec3(), new Mat4()));
+				program.setMat4("u_mvp",
+					viewProj * glm.GLM.transform(new glm.Vec3(0.0, -7.5, 0.0), new glm.Quat(), new glm.Vec3(0.05, 0.05, 0.05), new Mat4()));
 				program.setInt("u_is_spine", 1);
+				program.setFloatArray("u_spine_transform", [a, b, c, d]);
 				program.setFloatArray("u_offsets", offsets);
+				program.setVec2("u_spine_position", new Vec2(x, y));
 
 				Renderer.drawIndexed(6);
 				#if debug
@@ -81,40 +74,39 @@ class SpineSprite {
 				program.setInt("u_is_spine", 0);
 
 				#if 0
+				var offsetX:Float = 0, offsetY:Float = 0;
+				var calculatedPos = new Vec2();
+
 				// BR
 				offsetX = offsets[0];
 				offsetY = offsets[1];
-				positions[offset] = offsetX * a + offsetY * b + x;
-				positions[offset + 1] = offsetX * c + offsetY * d + y;
-				uvs[offset] = 1.0;
-				uvs[offset + 1] = 1.0;
+				calculatedPos.x = offsetX * a + offsetY * b + x;
+				calculatedPos.y = offsetX * c + offsetY * d + y;
 				offset += stride;
+				trace('BR: ${calculatedPos}');
 
 				// BL
 				offsetX = offsets[2];
 				offsetY = offsets[3];
-				positions[offset] = offsetX * a + offsetY * b + x;
-				positions[offset + 1] = offsetX * c + offsetY * d + y;
-				uvs[offset] = 0.0;
-				uvs[offset + 1] = 1.0;
+				calculatedPos.x = offsetX * a + offsetY * b + x;
+				calculatedPos.y = offsetX * c + offsetY * d + y;
 				offset += stride;
+				trace('BL: ${calculatedPos}');
 
 				// UL
 				offsetX = offsets[4];
 				offsetY = offsets[5];
-				positions[offset] = offsetX * a + offsetY * b + x;
-				positions[offset + 1] = offsetX * c + offsetY * d + y;
-				uvs[offset] = 0.0;
-				uvs[offset + 1] = 0.0;
+				calculatedPos.x = offsetX * a + offsetY * b + x;
+				calculatedPos.y = offsetX * c + offsetY * d + y;
 				offset += stride;
+				trace('UL: ${calculatedPos}');
 
 				// UR
 				offsetX = offsets[6];
 				offsetY = offsets[7];
-				positions[offset] = offsetX * a + offsetY * b + x;
-				positions[offset + 1] = offsetX * c + offsetY * d + y;
-				uvs[offset] = 1.0;
-				uvs[offset + 1] = 0.0;
+				calculatedPos.x = offsetX * a + offsetY * b + x;
+				calculatedPos.y = offsetX * c + offsetY * d + y;
+				trace('UR: ${calculatedPos}');
 				#end
 			} else if (Std.isOfType(slot.attachment, MeshAttachment)) {
 				//
