@@ -11,12 +11,13 @@ import renderer.SpineSprite;
 
 class MainGame {
 	public static var camera = renderer.Renderer.camera();
+	public static var spineSprite:SpineSprite = null;
 
 	public static function main() {
 		Engine.start(main_loop);
 
 		camera.pos.z = 10.0;
-		// final spineSprite = new SpineSprite();
+		spineSprite = new SpineSprite();
 	}
 
 	public static var pos = new Vec2();
@@ -41,10 +42,13 @@ class MainGame {
 		if (Input.key_pressed(Key.P))
 			trace('camera.pos:${camera.pos}, camera.rot:${camera.rot}');
 
+		spineSprite.update(Engine.delta_time);
+
 		Renderer.addCamera(camera);
-		Renderer.drawQuad(GLM.transform(new Vec3(10.0, 0.0, 0.0), Quat.fromEuler(0.0, 0.0, 0.0, new Quat()), new Vec3(5.0, 5.0, 5.0), new Mat4()));
-		Renderer.drawQuad(GLM.transform(new Vec3(0.0, 0.0, 0.0), Quat.fromEuler(0.0, 0.0, 0.0, new Quat()), new Vec3(5.0, 5.0, 5.0), new Mat4()));
+		// Renderer.drawQuad(GLM.transform(new Vec3(10.0, 0.0, 0.0), Quat.fromEuler(0.0, 0.0, 0.0, new Quat()), new Vec3(5.0, 5.0, 5.0), new Mat4()));
+		// Renderer.drawQuad(GLM.transform(new Vec3(0.0, 0.0, 0.0), Quat.fromEuler(0.0, 0.0, 0.0, new Quat()), new Vec3(5.0, 5.0, 5.0), new Mat4()));
 		Renderer.drawQuad(GLM.transform(new Vec3(-10.0, 0.0, 0.0), Quat.fromEuler(0.0, 0.0, 0.0, new Quat()), new Vec3(5.0, 5.0, 5.0), new Mat4()));
+		Renderer.drawSpine(spineSprite);
 		Renderer.render();
 	}
 }

@@ -123,6 +123,14 @@ class Program {
 		Renderer.gl.useProgram(program);
 	}
 
+	public function setFloatArray(name:String, data:Array<Float>) {
+		final uniform = uniformMap[name];
+		if (uniform == null)
+			return; // Should probably throw error
+
+		Renderer.gl.uniform1fv(uniform.location, data);
+	}
+
 	public function setFloat(name:String, data:Float) {
 		final uniform = uniformMap[name];
 		if (uniform == null)

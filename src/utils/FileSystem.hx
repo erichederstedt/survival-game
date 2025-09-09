@@ -3,6 +3,7 @@ package utils;
 import haxe.Http;
 import haxe.io.Bytes;
 import js.html.Image;
+import js.html.Uint8Array;
 import js.html.XMLHttpRequest;
 import js.lib.ArrayBuffer;
 
@@ -12,7 +13,6 @@ class FileSystem {
 	public static function getText(file:String):String {
 		final xhr = new XMLHttpRequest();
 		xhr.open("GET", file, false);
-		xhr.responseType = js.html.XMLHttpRequestResponseType.TEXT;
 		xhr.send();
 
 		if (xhr.status == 200) {
@@ -27,11 +27,17 @@ class FileSystem {
 	public static function getBytes(file:String):Bytes {
 		final xhr = new XMLHttpRequest();
 		xhr.open("GET", file, false);
-		xhr.responseType = js.html.XMLHttpRequestResponseType.ARRAYBUFFER;
 		xhr.send();
 
 		if (xhr.status == 200) {
-			final buffer:ArrayBuffer = cast xhr.response;
+			final str = xhr.responseText;
+			var buffer = new ArrayBuffer(str.length);
+			var bufferView = new Uint8Array(buffer);
+
+			for (i in 0...str.length) {
+				bufferView[i] = str.charCodeAt(i);
+			}
+
 			trace('Loaded binary file of length: ${buffer.byteLength}');
 			return Bytes.ofData(buffer);
 		} else {

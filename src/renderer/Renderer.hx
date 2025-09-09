@@ -19,7 +19,7 @@ class Quad {
 	public var transform:Mat4;
 }
 
-function quad():Quad {
+function quadConstructor():Quad {
 	return {
 		transform: Mat4.identity(new Mat4()),
 	};
@@ -71,31 +71,32 @@ function cameraCopy(a:Camera, b:Camera) {
 }
 
 class Renderer {
-	public static final quadsToDraw:LinearAllocator<Quad> = new LinearAllocator<Quad>(2048, quad);
+	public static var spinesToDraw:Array<SpineSprite> = new Array<SpineSprite>();
+	public static final quadsToDraw:LinearAllocator<Quad> = new LinearAllocator<Quad>(2048, quadConstructor);
 	public static final camerasToDraw:LinearAllocator<Camera> = new LinearAllocator<Camera>(8, camera);
 	public static final canvas:CanvasElement = getCanvasElement('webgl');
 	public static final gl:GL = canvas.getContextWebGL2();
 	public static final mainProgram:Program = new Program(new Shader('vertex.glsl', ShaderType.Vertex), new Shader('fragment.glsl', ShaderType.Fragment));
-	public static final triangle:VertexBuffer = new VertexBuffer(Float32Array.fromArray([
-		// Vertex 0
+	public static final quad:VertexBuffer = new VertexBuffer(Float32Array.fromArray([
+		// Vertex 0 (BL)
 		- 1.0, // X
 		- 1.0, // Y
 		0.0, // Z
 		0.0, // U
 		1.0, // V
-		// Vertex 1
+		// Vertex 1 (UL)
 		- 1.0, // X
 		1.0, // Y
 		0.0, // Z
 		0.0, // U
 		0.0, // V
-		// Vertex 2
+		// Vertex 2 (UR)
 		1.0, // X
 		1.0, // Y
 		0.0, // Z
 		1.0, // U
 		0.0, // V,
-		// Vertex 5
+		// Vertex 3 (BR)
 		1.0, // X
 		- 1.0, // Y
 		0.0, // Z
@@ -128,6 +129,10 @@ class Renderer {
 		quad.transform = transform;
 	}
 
+	public static function drawSpine(spine:SpineSprite) {
+		spinesToDraw.push(spine);
+	}
+
 	public static function resize() {
 		if (canvas.width != canvas.clientWidth || canvas.height != canvas.clientHeight) {
 			canvas.width = canvas.clientWidth;
@@ -151,7 +156,7 @@ class Renderer {
 		}
 
 		mainProgram.bind();
-		triangle.bind();
+		quad.bind();
 		inputLayout.bind(mainProgram);
 		texture2.bind(mainProgram, "u_texture");
 		indexBuffer.bind();
@@ -171,6 +176,11 @@ class Renderer {
 				drawIndexed(indexBuffer.length, 0, PrimitiveType.LineLoop);
 				#end
 			}
+
+			for (spine in spinesToDraw) {
+				spine.draw(gl, mainProgram, viewProj);
+			}
+			spinesToDraw = new Array<SpineSprite>();
 		}
 
 		quadsToDraw.reset();

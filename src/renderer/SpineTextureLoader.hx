@@ -1,6 +1,5 @@
 package renderer;
 
-import haxe.Http;
 import spine.atlas.TextureAtlasPage;
 import spine.atlas.TextureAtlasRegion;
 import spine.atlas.TextureLoader;
@@ -16,9 +15,15 @@ class SpineTextureLoader implements TextureLoader {
 		}
 	}
 
-	public function loadPage(page:TextureAtlasPage, path:String) {}
+	public function loadPage(page:TextureAtlasPage, path:String) {
+		page.texture = Texture.fromImage('${basePath}/${path}');
+	}
 
-	public function loadRegion(region:TextureAtlasRegion):Void {}
+	public function loadRegion(region:TextureAtlasRegion):Void {
+		region.texture = region.page.texture;
+	}
 
-	public function unloadPage(page:TextureAtlasPage):Void {}
+	public function unloadPage(page:TextureAtlasPage):Void {
+		page.texture = null;
+	}
 }
