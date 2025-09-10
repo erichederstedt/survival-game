@@ -11,4 +11,7 @@ out vec4 outColor;
 
 void main() {
   outColor = texture(u_texture, v_texcoord);
+
+  if (v_is_spine == 1)
+    outColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

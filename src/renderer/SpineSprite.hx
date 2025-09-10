@@ -62,11 +62,27 @@ class SpineSprite {
 				untyped final offsets = attachement.offsets; // 8 Float array.
 				final x = bone.worldX, y = bone.worldY;
 				final a = bone.a, b = bone.b, c = bone.c, d = bone.d;
-				program.setMat4("u_mvp",
-					viewProj * glm.GLM.transform(new glm.Vec3(0.0, -7.5, 0.0), new glm.Quat(), new glm.Vec3(0.05, 0.05, 0.05), new Mat4()));
+				program.setMat4("u_mvp", viewProj * glm.GLM.transform(new glm.Vec3(0.0, -7.5, 0.0), new glm.Quat(), new glm.Vec3(0.05, 0.05, 1.0), new Mat4()));
 				program.setInt("u_is_spine", 1);
-				program.setFloatArray("u_spine_transform", [a, b, c, d, x, y]);
-				program.setFloatArray("u_spine_offsets", offsets);
+
+				final regionScaleX = attachement.width / attachement.region.originalWidth * attachement.scaleX;
+				final regionScaleY = attachement.height / attachement.region.originalHeight * attachement.scaleY;
+				final localX = -attachement.width / 2 * attachement.scaleX + attachement.region.offsetX * regionScaleX;
+				final localY = -attachement.height / 2 * attachement.scaleY + attachement.region.offsetY * regionScaleY;
+				final localX2 = localX + attachement.region.width * regionScaleX;
+				final localY2 = localY + attachement.region.height * regionScaleY;
+
+				final shiX = attachement.region.width * regionScaleX;
+				final shiY = attachement.region.height * regionScaleY;
+
+				final boneTransform = glm.GLM.transform(new glm.Vec3(bone.worldX + attachement.region.offsetX, bone.worldY + attachement.region.offsetY, 0.0),
+					glm.Quat.fromEuler(0.0, 0.0, 0.0, new glm.Quat()), new glm.Vec3(localX2, localY2), new glm.Mat4());
+				program.setMat4("u_bone_transform", boneTransform);
+
+				/*
+					program.setFloatArray("u_spine_transform", [a, b, c, d, x, y]);
+					program.setFloatArray("u_spine_offsets", offsets);
+				 */
 				program.setFloatArray("u_spine_uvs", attachement.uvs);
 
 				final texture:Texture = cast attachement.region.texture;
@@ -77,47 +93,8 @@ class SpineSprite {
 				setBlendMode(gl, slot.data.blendMode);
 
 				Renderer.drawIndexed(6);
-				#if debug
-				Renderer.drawIndexed(6, 0, PrimitiveType.LineLoop);
-				#end
 
 				program.setInt("u_is_spine", 0);
-
-				#if 0
-				var offsetX:Float = 0, offsetY:Float = 0;
-				var calculatedPos = new Vec2();
-
-				// BR
-				offsetX = offsets[0];
-				offsetY = offsets[1];
-				calculatedPos.x = offsetX * a + offsetY * b + x;
-				calculatedPos.y = offsetX * c + offsetY * d + y;
-				offset += stride;
-				trace('BR: ${calculatedPos}');
-
-				// BL
-				offsetX = offsets[2];
-				offsetY = offsets[3];
-				calculatedPos.x = offsetX * a + offsetY * b + x;
-				calculatedPos.y = offsetX * c + offsetY * d + y;
-				offset += stride;
-				trace('BL: ${calculatedPos}');
-
-				// UL
-				offsetX = offsets[4];
-				offsetY = offsets[5];
-				calculatedPos.x = offsetX * a + offsetY * b + x;
-				calculatedPos.y = offsetX * c + offsetY * d + y;
-				offset += stride;
-				trace('UL: ${calculatedPos}');
-
-				// UR
-				offsetX = offsets[6];
-				offsetY = offsets[7];
-				calculatedPos.x = offsetX * a + offsetY * b + x;
-				calculatedPos.y = offsetX * c + offsetY * d + y;
-				trace('UR: ${calculatedPos}');
-				#end
 			} else if (Std.isOfType(slot.attachment, MeshAttachment)) {
 				//
 			} else if (Std.isOfType(slot.attachment, ClippingAttachment)) {

@@ -147,8 +147,8 @@ class Renderer {
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(GL.COLOR_BUFFER_BIT);
 		gl.clearDepth(0.0);
-		gl.enable(GL.CULL_FACE);
-		gl.cullFace(GL.BACK);
+		// gl.enable(GL.CULL_FACE);
+		// gl.cullFace(GL.BACK);
 		gl.frontFace(GL.CW);
 		gl.enable(GL.BLEND);
 
