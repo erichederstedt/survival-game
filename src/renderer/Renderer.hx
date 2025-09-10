@@ -150,6 +150,7 @@ class Renderer {
 		gl.enable(GL.CULL_FACE);
 		gl.cullFace(GL.BACK);
 		gl.frontFace(GL.CW);
+		gl.enable(GL.BLEND);
 
 		if (mainProgram.status != Status.Succesful) {
 			quadsToDraw.reset();

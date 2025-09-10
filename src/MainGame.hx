@@ -42,7 +42,7 @@ class MainGame {
 		if (Input.key_pressed(Key.P))
 			trace('camera.pos:${camera.pos}, camera.rot:${camera.rot}');
 
-		spineSprite.update(Engine.delta_time);
+		spineSprite.update(Engine.delta_time / 1000.0);
 
 		Renderer.addCamera(camera);
 		Renderer.drawQuad(GLM.transform(new Vec3(10.0, 0.0, 0.0), Quat.fromEuler(0.0, 0.0, 0.0, new Quat()), new Vec3(5.0, 5.0, 5.0), new Mat4()));

@@ -5,6 +5,7 @@ import glm.Mat4;
 import glm.Quat;
 import glm.Vec2;
 import renderer.SpineTextureLoader;
+import spine.BlendMode;
 import spine.Bone;
 import spine.Physics;
 import spine.Skeleton;
@@ -31,8 +32,10 @@ class SpineSprite {
 		skeleton = new Skeleton(skeletonData);
 		Bone.yDown = false;
 		animationStateData = new AnimationStateData(skeletonData);
+		animationStateData.defaultMix = 0.25;
 		animationState = new AnimationState(animationStateData);
 		skeleton.setToSetupPose();
+		animationState.setAnimationByName(0, "walk", true);
 	}
 
 	private static var QUAD_INDICES:Array<Int> = [0, 1, 2, 2, 3, 0];
@@ -62,9 +65,16 @@ class SpineSprite {
 				program.setMat4("u_mvp",
 					viewProj * glm.GLM.transform(new glm.Vec3(0.0, -7.5, 0.0), new glm.Quat(), new glm.Vec3(0.05, 0.05, 0.05), new Mat4()));
 				program.setInt("u_is_spine", 1);
-				program.setFloatArray("u_spine_transform", [a, b, c, d]);
-				program.setFloatArray("u_offsets", offsets);
-				program.setVec2("u_spine_position", new Vec2(x, y));
+				program.setFloatArray("u_spine_transform", [a, b, c, d, x, y]);
+				program.setFloatArray("u_spine_offsets", offsets);
+				program.setFloatArray("u_spine_uvs", attachement.uvs);
+
+				final texture:Texture = cast attachement.region.texture;
+				if (texture != null) {
+					texture.bind(program, "u_texture");
+				}
+
+				setBlendMode(gl, slot.data.blendMode);
 
 				Renderer.drawIndexed(6);
 				#if debug
@@ -113,6 +123,21 @@ class SpineSprite {
 			} else if (Std.isOfType(slot.attachment, ClippingAttachment)) {
 				//
 			} else {}
+		}
+	}
+
+	function setBlendMode(gl:GL, blendMode:BlendMode) {
+		gl.blendEquation(GL.FUNC_ADD);
+
+		switch (blendMode) {
+			case BlendMode.normal:
+				gl.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
+			case BlendMode.additive:
+				gl.blendFunc(GL.SRC_ALPHA, GL.ONE);
+			case BlendMode.multiply:
+				gl.blendFunc(GL.DST_COLOR, GL.ZERO);
+			case BlendMode.screen:
+				gl.blendFunc(GL.ONE, GL.ONE_MINUS_SRC_COLOR);
 		}
 	}
 }
